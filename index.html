@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Prototipo Biblioteca RA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #ar-instructions {
+            position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 12px 20px;
+            border-radius: 10px; font-family: sans-serif; font-size: 14px;
+            z-index: 999; text-align: center; width: 80%;
+            pointer-events: none; border: 1px solid #FFC107;
+        }
+    </style>
+</head>
+
+<body>
+<div id="ar-instructions">
+    <b>Guía:</b> Apunta la imagen de la estanteria.<br>
+    Mantén el círculo central sobre los puntos amarillos para abrir la información.
+</div>
+
+<a-scene mindar-image="imageTargetSrc: ./imagenes/targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes;"
+         color-space="sRGB"
+         renderer="colorManagement: true, physicallyCorrectLights"
+         vr-mode-ui="enabled: false"
+         device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+        <a-asset-item id="bibliotecaModel" src="./library.glb"></a-asset-item>
+
+        <img id="img_empatia" src="../imagenes/MapaEmpatia.png" alt="Mapa de Empatía">
+        <img id="img_ciclo" src="../imagenes/CicloDeVida.png" alt="Ciclo de Vida">
+        <img id="img_funciones" src="../imagenes/Funciones.png" alt="Funciones">
+        <img id="img_restricciones" src="../imagenes/PilaresDeRestriccion.png" alt="Pilares de Restricciones">
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false">
+        <a-cursor fuse="true" fuse-timeout="1200"
+                  color="#FFC107"
+                  material="shader: flat"
+                  position="0 0 -1"
+                  geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03">
+        </a-cursor>
+    </a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0">
+
+        <a-gltf-model src="#bibliotecaModel"
+                      position="0 -0.4 -0.8"
+                      scale="0.015 0.015 0.015"
+                      rotation="0 0 0">
+        </a-gltf-model>
+
+        <a-entity id="hotspot1" geometry="primitive: sphere; radius: 0.06" material="color: #FFC107; emissive: #FFC107; emissiveIntensity: 0.5" position="-0.4 0.2 -0.4" class="clickable"></a-entity>
+        <a-entity id="hotspot2" geometry="primitive: sphere; radius: 0.06" material="color: #FFC107; emissive: #FFC107; emissiveIntensity: 0.5" position="-0.1 0.4 -0.4" class="clickable"></a-entity>
+        <a-entity id="hotspot3" geometry="primitive: sphere; radius: 0.06" material="color: #FFC107; emissive: #FFC107; emissiveIntensity: 0.5" position="0.2 0.3 -0.4" class="clickable"></a-entity>
+        <a-entity id="hotspot4" geometry="primitive: sphere; radius: 0.06" material="color: #FFC107; emissive: #FFC107; emissiveIntensity: 0.5" position="0.4 0.0 -0.4" class="clickable"></a-entity>
+
+        <a-image id="panel1" src="#img_empatia" position="0 0.3 0.1" visible="false" width="1.1" height="0.8"></a-image>
+        <a-image id="panel2" src="#img_ciclo" position="0 0.3 0.1" visible="false" width="1.1" height="0.8"></a-image>
+        <a-image id="panel3" src="#img_funciones" position="0 0.3 0.1" visible="false" width="1.1" height="0.8"></a-image>
+        <a-image id="panel4" src="#img_restricciones" position="0 0.3 0.1" visible="false" width="1.1" height="0.8"></a-image>
+
+        <a-light type="ambient" color="#FFF" intensity="0.8"></a-light>
+        <a-light type="directional" color="#FFF" intensity="0.5" position="-1 2 1"></a-light>
+    </a-entity>
+</a-scene>
+
+<script>
+    const hotspots = [
+        document.querySelector('#hotspot1'),
+        document.querySelector('#hotspot2'),
+        document.querySelector('#hotspot3'),
+        document.querySelector('#hotspot4')
+    ];
+    const panels = [
+        document.querySelector('#panel1'),
+        document.querySelector('#panel2'),
+        document.querySelector('#panel3'),
+        document.querySelector('#panel4')
+    ];
+
+    const resetAll = () => {
+        panels.forEach(p => p.setAttribute('visible', 'false'));
+        hotspots.forEach(h => h.setAttribute('visible', 'true'));
+    };
+
+    hotspots.forEach((hotspot, index) => {
+        hotspot.addEventListener('click', () => {
+            resetAll();
+            panels[index].setAttribute('visible', 'true');
+            // Animación de escala para que se note el clic
+            panels[index].setAttribute('animation', 'property: scale; from: 0 0 0; to: 1 1 1; dur: 300');
+            hotspot.setAttribute('visible', 'false');
+        });
+    });
+</script>
+</body>
+</html>
