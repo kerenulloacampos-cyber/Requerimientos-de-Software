@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Biblioteca RA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #ar-instructions {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: #FFC107; padding: 12px;
+            border-radius: 10px; font-family: sans-serif; z-index: 999; text-align: center; width: 75%;
+            border: 1px solid #FFC107; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div id="ar-instructions">1. Apunnta el estante de libros<br>2. Mantén el círculo sobre las esferas amarillas</div>
+
+<a-scene
+        mindar-image="imageTargetSrc: ./targets.mind;"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        raycaster="objects: .clickable">
+
+    <a-assets>
+        <a-asset-item id="bibliotecaModel" src="./library.glb"></a-asset-item>
+        <img id="img1" src="./mapaempatia.png">
+        <img id="img2" src="./ciclodevida.png">
+        <img id="img3" src="./funciones.png">
+        <img id="img4" src="./pilaresderestriccion.png">
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false">
+        <a-cursor fuse="true" fuse-timeout="1200" color="#FFC107" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"></a-cursor>
+    </a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model src="#bibliotecaModel" position="0 -0.4 -0.6" scale="0.015 0.015 0.015"></a-gltf-model>
+
+        <a-sphere id="hp1" position="-0.4 0.2 -0.3" radius="0.06" color="#FFC107" class="clickable"></a-sphere>
+        <a-sphere id="hp2" position="-0.1 0.4 -0.3" radius="0.06" color="#FFC107" class="clickable"></a-sphere>
+        <a-sphere id="hp3" position="0.2 0.3 -0.3" radius="0.06" color="#FFC107" class="clickable"></a-sphere>
+        <a-sphere id="hp4" position="0.4 0.1 -0.3" radius="0.06" color="#FFC107" class="clickable"></a-sphere>
+
+        <a-image id="p1" src="#img1" position="0 0.3 0.1" visible="false" width="1.2" height="0.9"></a-image>
+        <a-image id="p2" src="#img2" position="0 0.3 0.1" visible="false" width="1.2" height="0.9"></a-image>
+        <a-image id="p3" src="#img3" position="0 0.3 0.1" visible="false" width="1.2" height="0.9"></a-image>
+        <a-image id="p4" src="#img4" position="0 0.3 0.1" visible="false" width="1.2" height="0.9"></a-image>
+
+        <a-light type="ambient" intensity="1.5"></a-light>
+    </a-entity>
+</a-scene>
+
+<script>
+    const hps = [document.querySelector('#hp1'), document.querySelector('#hp2'), document.querySelector('#hp3'), document.querySelector('#hp4')];
+    const ps = [document.querySelector('#p1'), document.querySelector('#p2'), document.querySelector('#p3'), document.querySelector('#p4')];
+
+    hps.forEach((h, i) => {
+        h.addEventListener('click', () => {
+            ps.forEach(p => p.setAttribute('visible', 'false'));
+            hps.forEach(hp => hp.setAttribute('visible', 'true'));
+            ps[i].setAttribute('visible', 'true');
+            h.setAttribute('visible', 'false');
+        });
+    });
+</script>
+</body>
+</html>
